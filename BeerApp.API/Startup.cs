@@ -35,7 +35,7 @@ namespace BeerApp.API
 
             services.AddDbContext<BeerContext>(options =>
             {
-                options.UseInMemoryDatabase(databaseName: "Beers");
+                options.UseSqlServer(Configuration.GetConnectionString("BeerContext"));
             });
 
             services.AddControllers();
