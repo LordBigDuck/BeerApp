@@ -22,7 +22,7 @@ namespace BeerApp.Infrastructure.Services
         public Task<List<Brewer>> GetAllWithDetails()
         {
             return _context.Brewers
-                //.Include(brewer => brewer.Beers)
+                .Include(brewer => brewer.Beers)
                     //.ThenInclude(beer => beer.WholesalerBeers)
                     //.ThenInclude(wholesalerBeer => wholesalerBeer.Wholesaler)
                 .ToListAsync();

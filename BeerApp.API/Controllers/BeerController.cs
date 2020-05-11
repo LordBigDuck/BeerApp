@@ -11,5 +11,6 @@ namespace BeerApp.API.Controllers
     [ApiController]
     public class BeerController : ControllerBase
     {
+
     }
 }
