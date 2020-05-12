@@ -2,8 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using BeerApp.API.ViewModels;
+using BeerApp.Core.Commands;
+using BeerApp.Core.Models;
+using BeerApp.Core.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace BeerApp.API.Controllers
 {
@@ -11,6 +17,44 @@ namespace BeerApp.API.Controllers
     [ApiController]
     public class BeerController : ControllerBase
     {
+        private readonly IBeerService _beerService;
+        private readonly IMapper _mapper;
 
+        public BeerController(
+            IBeerService beerService,
+            IMapper mapper)
+        {
+            _beerService = beerService;
+            _mapper = mapper;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<BeerViewModel>> GetById(int id)
+        {
+            var beer = await _beerService.GetById(id);
+
+            if (beer == null) return NotFound();
+
+            var beerViewModel = _mapper.Map<BeerViewModel>(beer);
+            return Ok(beerViewModel);
+        }
+
+        [HttpPost]
+        public ActionResult<BeerViewModel> Add([FromBody] AddBeerCommand command)
+        {
+            if (command == null) return BadRequest();
+
+            var beer = _beerService.Add(command);
+
+            return CreatedAtAction(nameof(GetById), new { id = beer.Id }, _mapper.Map<BeerViewModel>(beer));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            await _beerService.Delete(id);
+
+            return NoContent();
+        }
     }
 }

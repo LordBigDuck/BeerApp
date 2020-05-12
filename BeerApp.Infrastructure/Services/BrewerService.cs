@@ -23,8 +23,8 @@ namespace BeerApp.Infrastructure.Services
         {
             return _context.Brewers
                 .Include(brewer => brewer.Beers)
-                    //.ThenInclude(beer => beer.WholesalerBeers)
-                    //.ThenInclude(wholesalerBeer => wholesalerBeer.Wholesaler)
+                    .ThenInclude(beer => beer.WholesalerBeers)
+                //.ThenInclude(wholesalerBeer => wholesalerBeer.Wholesaler)
                 .ToListAsync();
         }
     }

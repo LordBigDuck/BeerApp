@@ -9,5 +9,18 @@ namespace BeerApp.Core.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public ICollection<WholesalerBeer> WholesalerBeers { get; set; }
+
+        public void AddBeer(Beer beer, int stock)
+        {
+            // TODO : do someting if stock is negative
+
+            WholesalerBeers ??= new List<WholesalerBeer>();
+            WholesalerBeers.Add(new WholesalerBeer
+            {
+                Wholesaler = this,
+                Beer = beer,
+                Stock = stock
+            });
+        }
     }
 }

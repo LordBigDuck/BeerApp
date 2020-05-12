@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using BeerApp.Core.Models;
 using BeerApp.Core.Services;
 using BeerApp.Infrastructure.Database;
@@ -32,6 +33,8 @@ namespace BeerApp.API
             services.AddScoped<IBeerService, BeerService>();
             services.AddScoped<IBrewerService, BrewerService>();
             services.AddScoped<IWholesalerService, WholesalerService>();
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddDbContext<BeerContext>(options =>
             {
