@@ -29,24 +29,24 @@ namespace BeerApp.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BeerViewModel>> GetById(int id)
+        public async Task<ActionResult<GetBeer>> GetById(int id)
         {
             var beer = await _beerService.GetById(id);
 
             if (beer == null) return NotFound();
 
-            var beerViewModel = _mapper.Map<BeerViewModel>(beer);
+            var beerViewModel = _mapper.Map<GetBeer.Beer>(beer);
             return Ok(beerViewModel);
         }
 
         [HttpPost]
-        public ActionResult<BeerViewModel> Add([FromBody] AddBeerCommand command)
+        public ActionResult<GetBeer> Add([FromBody] AddBeerCommand command)
         {
             if (command == null) return BadRequest();
 
             var beer = _beerService.Add(command);
 
-            return CreatedAtAction(nameof(GetById), new { id = beer.Id }, _mapper.Map<BeerViewModel>(beer));
+            return CreatedAtAction(nameof(GetById), new { id = beer.Id }, _mapper.Map<GetBeer.Beer>(beer));
         }
 
         [HttpDelete("{id}")]

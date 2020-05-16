@@ -12,9 +12,6 @@ namespace BeerApp.API.Mappers.Profiles
     {
         public WholesalerProfile()
         {
-            CreateMap<Wholesaler, WholesalerViewModel>();
-            CreateMap<WholesalerViewModel, Wholesaler>();
-            // TODO : WholesalerBeer mapping to BeerViewModel
         }
     }
 }

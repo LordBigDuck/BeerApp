@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BeerApp.Core.Commands
 {
-    public class UpdateBeerStock
+    public class UpdateBeerStockCommand
     {
         public int WholesalerId { get; set; }
         public int BeerId { get; set; }

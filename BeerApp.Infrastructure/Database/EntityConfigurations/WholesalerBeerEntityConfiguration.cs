@@ -9,8 +9,12 @@ namespace BeerApp.Infrastructure.Database.EntityConfigurations
 {
     public class WholesalerBeerEntityConfiguration : IEntityTypeConfiguration<WholesalerBeer>
     {
+        private const string TableName = "WholesalerBeer";
+
         public void Configure(EntityTypeBuilder<WholesalerBeer> builder)
         {
+            builder.ToTable(TableName);
+
             builder.HasKey(wb => new { wb.BeerId, wb.WholesalerId });
 
             builder.HasOne(wb => wb.Beer)

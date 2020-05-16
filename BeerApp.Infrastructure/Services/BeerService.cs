@@ -63,7 +63,9 @@ namespace BeerApp.Infrastructure.Services
 
         public Task<Beer> GetById(int beerId)
         {
-            return _context.Beers.FirstOrDefaultAsync(beer => beer.Id == beerId);
+            return _context.Beers
+                .Include(beer => beer.Brewer)
+                .FirstOrDefaultAsync(beer => beer.Id == beerId);
         }
     }
 }

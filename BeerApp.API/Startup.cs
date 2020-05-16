@@ -42,7 +42,7 @@ namespace BeerApp.API
             });
 
             services.AddControllers()
-                .AddNewtonsoftJson(options => 
+                .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 

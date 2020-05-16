@@ -11,7 +11,7 @@ namespace BeerApp.Core.Services
     {
         Task AddBeer(AddBeerToWholesalerCommand command);
         Task<Wholesaler> GetById(int id);
-        Task<object> GetQuote();
-        Task UpdateStock(UpdateBeerStock command);
+        Task<Quote> GetQuote(int id, GetQuoteCommand command);
+        Task UpdateStock(UpdateBeerStockCommand command);
     }
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using BeerApp.API.ViewModels;
 using BeerApp.Core.Commands;
 using BeerApp.Core.Models;
 using BeerApp.Core.Services;
@@ -15,13 +17,28 @@ namespace BeerApp.API.Controllers
     public class WholesalerController : ControllerBase
     {
         private readonly IWholesalerService _wholesalerService;
+        private readonly IMapper _mapper;
 
         public WholesalerController(
-            IWholesalerService wholesalerService
+            IWholesalerService wholesalerService,
+            IMapper mapper
             )
         {
             _wholesalerService = wholesalerService;
+            _mapper = mapper;
         }
+
+        [HttpPost("{wholesalerId}/quote")]
+        public async Task<ActionResult<GetQuoteViewModel>> GetQuote(int wholesalerId, GetQuoteCommand command)
+        {
+            if (command == null) return BadRequest();
+
+            var quote = await _wholesalerService.GetQuote(wholesalerId, command);
+
+            var quoteViewModel = _mapper.Map<Quote, GetQuoteViewModel.Quote>(quote);
+
+            return Ok(quoteViewModel);
+        } 
 
         [HttpPost("{wholesalerId}/beer")]
         public async Task<ActionResult<Wholesaler>> AddBeer(AddBeerToWholesalerCommand command)
@@ -37,7 +54,7 @@ namespace BeerApp.API.Controllers
         [HttpPut("{wholesalerId}/beer/{beerId}")]
         public async Task<ActionResult> UpdateBeerStock(int wholesalerId, int beerId, [FromBody] int stock)
         {
-            await _wholesalerService.UpdateStock(new UpdateBeerStock
+            await _wholesalerService.UpdateStock(new UpdateBeerStockCommand
             {
                 BeerId = beerId,
                 WholesalerId = wholesalerId,

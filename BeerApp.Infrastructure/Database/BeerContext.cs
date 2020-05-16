@@ -12,6 +12,7 @@ namespace BeerApp.Infrastructure.Database
         public DbSet<Beer> Beers { get; set; }
         public DbSet<Wholesaler> Wholesalers { get; set; }
         public DbSet<Brewer> Brewers { get; set; }
+        public DbSet<WholesalerBeer> WholesalerBeers { get; set; }
 
         public BeerContext(DbContextOptions<BeerContext> options) : base(options) { }
 

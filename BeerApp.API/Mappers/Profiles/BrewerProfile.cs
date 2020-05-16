@@ -12,8 +12,11 @@ namespace BeerApp.API.Mappers.Profiles
     {
         public BrewerProfile()
         {
-            CreateMap<Brewer, BrewerViewModel>();
-            CreateMap<BrewerViewModel, Brewer>();
+            //CreateMap<Brewer, BrewerViewModel>();
+            //CreateMap<BrewerViewModel, Brewer>();
+            //CreateMap<Brewer, GetBrewerDetails.Brewer>();
+            CreateMap<Brewer, GetBrewerDetails.Brewer>();
+            CreateMap<Brewer, GetBeer.Brewer>();
         }
     }
 }
