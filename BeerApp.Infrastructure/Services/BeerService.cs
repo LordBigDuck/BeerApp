@@ -21,13 +21,10 @@ namespace BeerApp.Infrastructure.Services
             _context = context;
         }
 
-        // Note: trying to not use async version of SaveChanges
-        // Note 2 : trying Single instead of SingleOrDefault
         public Beer Add(AddBeerCommand command)
         {
-            // Check if brasseur exist
-            // check if exception throw is null is enough
-            var brewer = _context.Brewers.Single(brewer => brewer.Id == command.BrewerId);
+            var brewer = _context.Brewers.SingleOrDefault(brewer => brewer.Id == command.BrewerId);
+            if (brewer == null) throw new CustomBadRequestException("Brewer does not exist");
 
             var beer = new Beer
             {
