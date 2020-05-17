@@ -55,7 +55,8 @@ namespace BeerApp.Infrastructure.Services
             if (command.CommandLines.Count() <= 0) throw new CustomBadRequestException("Item list cannot be null");
 
             // Duplicates
-            if (command.CommandLines.Count() != command.CommandLines.Distinct().Count())
+            var totalDistinct = command.CommandLines.Select(c => c.BeerId).Distinct().Count();
+            if (command.CommandLines.Count() != totalDistinct)
             {
                 throw new CustomBadRequestException("Item list cannot contains duplicates");
             }
@@ -64,6 +65,7 @@ namespace BeerApp.Infrastructure.Services
                 .Include(w => w.WholesalerBeers)
                     .ThenInclude(wb => wb.Beer)
                 .SingleOrDefaultAsync(w => w.Id == id);
+            if (wholesaler == null) throw new CustomBadRequestException($"Wholesaler does not exist");
 
             // Generate quote
             var quote = new Quote();
@@ -73,6 +75,11 @@ namespace BeerApp.Infrastructure.Services
                 if (wb == null)
                 {
                     throw new CustomBadRequestException($"Beer with id: {item.BeerId} is not sell by this wholesaler");
+                }
+
+                if (wb.Stock < item.Quantity)
+                {
+                    throw new CustomBadRequestException($"Not enough stock for beer {item.BeerId}");
                 }
 
                 quote.Items.Add(new CommandLine

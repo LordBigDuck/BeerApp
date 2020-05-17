@@ -1,5 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
+using BeerApp.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
 using System.Collections.Generic;
