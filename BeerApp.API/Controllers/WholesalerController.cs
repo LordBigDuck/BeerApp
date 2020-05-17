@@ -42,8 +42,6 @@ namespace BeerApp.API.Controllers
         [HttpPost("{wholesalerId}/beer")]
         public async Task<ActionResult<Wholesaler>> AddBeer(AddBeerToWholesalerCommand command)
         {
-            if (command == null) return BadRequest();
-
             await _wholesalerService.AddBeer(command);
 
             // TODO : Check to return a 201
