@@ -1,4 +1,5 @@
 ﻿using BeerApp.Core.Commands;
+using BeerApp.Core.Exceptions;
 using BeerApp.Core.Models;
 using BeerApp.Core.Services;
 using BeerApp.Infrastructure.Database;
@@ -47,8 +48,7 @@ namespace BeerApp.Infrastructure.Services
         {
             var beer = await GetById(beerId);
 
-            // TODO return custom exception
-            if (beer == null) throw new Exception("No beer found");
+            if (beer == null) throw new CustomNotFoundException($"Beer with id {beerId} does not exist");
 
             beer.IsActive = false;
             _context.Beers.Update(beer);
@@ -65,7 +65,7 @@ namespace BeerApp.Infrastructure.Services
         {
             return _context.Beers
                 .Include(beer => beer.Brewer)
-                .FirstOrDefaultAsync(beer => beer.Id == beerId);
+                .FirstOrDefaultAsync(beer => beer.Id == beerId && beer.IsActive);
         }
     }
 }

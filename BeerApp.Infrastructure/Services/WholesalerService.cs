@@ -1,4 +1,5 @@
 ﻿using BeerApp.Core.Commands;
+using BeerApp.Core.Exceptions;
 using BeerApp.Core.Models;
 using BeerApp.Core.Services;
 using BeerApp.Infrastructure.Database;
@@ -25,13 +26,15 @@ namespace BeerApp.Infrastructure.Services
             var wholesaler = _beerContext.Wholesalers
                 .Include(w => w.WholesalerBeers)
                 .FirstOrDefault(w => w.Id == command.WholesalerId);
-            if (wholesaler == null) throw new Exception("TODO : return custom message");
+            if (wholesaler == null) throw new CustomBadRequestException($"Wholesaler with id {command.WholesalerId} does not exist");
 
             var beer = _beerContext.Beers.FirstOrDefault(b => b.Id == command.BeerId);
-            if (beer == null) throw new Exception("TODO : return custom message");
+            if (beer == null) throw new CustomBadRequestException($"Beer with id {command.BeerId} does not exist");
 
-            // TODO : when wholesaler already contains beer, check if return custom excption or custom one
-            //if (wholesaler.WholesalerBeers.Any(wb => wb.BeerId == command.BeerId)) throw new Exception("TODO : return custom message");
+            if (wholesaler.WholesalerBeers.Any(wb => wb.BeerId == command.BeerId))
+            {
+                throw new CustomBadRequestException("Wholesaler already sell this beer");
+            }
 
             wholesaler.AddBeer(beer, command.Stock);
             _beerContext.Wholesalers.Update(wholesaler);
@@ -47,14 +50,14 @@ namespace BeerApp.Infrastructure.Services
         public async Task<Quote> GetQuote(int id, GetQuoteCommand command)
         {
             // Empty command
-            if (command.CommandLines == null) throw new Exception("Item list cannot be null");
+            if (command.CommandLines == null) throw new CustomBadRequestException("Item list cannot be null");
 
-            if (command.CommandLines.Count() <= 0) throw new Exception("Item list cannot be null");
+            if (command.CommandLines.Count() <= 0) throw new CustomBadRequestException("Item list cannot be null");
 
             // Duplicates
             if (command.CommandLines.Count() != command.CommandLines.Distinct().Count())
             {
-                throw new Exception("Item list cannot contains duplicates");
+                throw new CustomBadRequestException("Item list cannot contains duplicates");
             }
 
             var wholesaler = await _beerContext.Wholesalers
@@ -69,7 +72,7 @@ namespace BeerApp.Infrastructure.Services
                 var wb = wholesaler.WholesalerBeers.SingleOrDefault(wb => wb.BeerId == item.BeerId);
                 if (wb == null)
                 {
-                    throw new Exception($"Beer with id: {item.BeerId} is not sell by this wholesaler");
+                    throw new CustomBadRequestException($"Beer with id: {item.BeerId} is not sell by this wholesaler");
                 }
 
                 quote.Items.Add(new CommandLine
@@ -77,20 +80,20 @@ namespace BeerApp.Infrastructure.Services
                     Beer = wb.Beer,
                     Quantity = item.Quantity
                 });
-                quote.Price += item.Quantity * wb.Beer.Price;
+                quote.Total += item.Quantity * wb.Beer.Price;
             }
 
             // Apply discount
-            var discount = quote.GetQuantityDiscount();
-            quote.Price -= discount;
-            quote.Price = Math.Round(quote.Price, 2);
-
+            quote.Total = Math.Round(quote.Total, 2);
+            quote.Discount = quote.GetQuantityDiscount();
+            quote.Price = quote.Total - quote.Discount;
+            
             return quote;
         }
 
         public async Task UpdateStock(UpdateBeerStockCommand command)
         {
-            if (command.Stock <= 0) throw new Exception("Stock should be positive");
+            if (command.Stock <= 0) throw new CustomBadRequestException("Stock should be positive");
 
             var wholesalerBeer = await _beerContext.WholesalerBeers
                 .FindAsync(command.WholesalerId, command.BeerId);

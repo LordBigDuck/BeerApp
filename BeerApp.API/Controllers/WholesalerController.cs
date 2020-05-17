@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BeerApp.API.ViewModels;
 using BeerApp.Core.Commands;
+using BeerApp.Core.Exceptions;
 using BeerApp.Core.Models;
 using BeerApp.Core.Services;
 using Microsoft.AspNetCore.Http;
@@ -31,8 +32,6 @@ namespace BeerApp.API.Controllers
         [HttpPost("{wholesalerId}/quote")]
         public async Task<ActionResult<GetQuoteViewModel>> GetQuote(int wholesalerId, GetQuoteCommand command)
         {
-            if (command == null) return BadRequest();
-
             var quote = await _wholesalerService.GetQuote(wholesalerId, command);
 
             var quoteViewModel = _mapper.Map<Quote, GetQuoteViewModel.Quote>(quote);

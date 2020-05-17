@@ -7,6 +7,8 @@ namespace BeerApp.Core.Models
 {
     public class Quote
     {
+        public double Total { get; set; } = 0;
+        public double Discount { get; set; } = 0;
         public double Price { get; set; } = 0;
         public List<CommandLine> Items { get; set; } = new List<CommandLine>();
 
@@ -20,16 +22,17 @@ namespace BeerApp.Core.Models
 
             // Dans l'enonce, il est mis AU DESSUS de x. Mais il est plus logique que la reduction se fasse 
             // a partir d'un chiffre rond, d'ou le plus >= et non pas >
+            double discount = 0;
             if (totalQuantity >= 10 && totalQuantity < 20)
             {
-                return Price * 0.1;
+                discount = Total * 0.1;
             } 
             else if (totalQuantity >= 20)
             {
-                return Price * 0.2;
+                discount = Total * 0.2;
             }
 
-            return 0;
+            return Math.Round(discount, 2);
         }
     }
 }

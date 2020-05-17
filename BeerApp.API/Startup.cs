@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using BeerApp.API.Middlewares;
 using BeerApp.Core.Models;
 using BeerApp.Core.Services;
 using BeerApp.Infrastructure.Database;
@@ -57,7 +58,7 @@ namespace BeerApp.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

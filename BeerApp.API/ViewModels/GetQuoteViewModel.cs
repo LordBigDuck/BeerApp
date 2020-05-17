@@ -10,6 +10,8 @@ namespace BeerApp.API.ViewModels
     {
         internal class Quote
         {
+            public double Total { get; set; }
+            public double Discount { get; set; }
             public double Price { get; set; }
             public List<CommandLine> Items { get; set; }
         }

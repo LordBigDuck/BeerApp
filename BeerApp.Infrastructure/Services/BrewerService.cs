@@ -19,13 +19,20 @@ namespace BeerApp.Infrastructure.Services
             _context = context;
         }
 
-        public Task<List<Brewer>> GetAllWithDetails()
+        public async Task<List<Brewer>> GetAllWithDetails()
         {
-            return _context.Brewers
+            var brewers = await _context.Brewers
                 .Include(brewer => brewer.Beers)
                     .ThenInclude(beer => beer.WholesalerBeers)
                     .ThenInclude(wholesalerBeer => wholesalerBeer.Wholesaler)
                 .ToListAsync();
+
+            foreach (var brewer in brewers)
+            {
+                brewer.Beers = brewer.Beers.Where(beer => beer.IsActive).ToList();
+            }
+
+            return brewers;
         }
     }
 }

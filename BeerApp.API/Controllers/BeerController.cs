@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BeerApp.API.ViewModels;
 using BeerApp.Core.Commands;
+using BeerApp.Core.Exceptions;
 using BeerApp.Core.Models;
 using BeerApp.Core.Services;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +34,7 @@ namespace BeerApp.API.Controllers
         {
             var beer = await _beerService.GetById(id);
 
-            if (beer == null) return NotFound();
+            if (beer == null) throw new CustomNotFoundException($"Beer with id {id} does not exist");
 
             var beerViewModel = _mapper.Map<GetBeer.Beer>(beer);
             return Ok(beerViewModel);
@@ -42,8 +43,6 @@ namespace BeerApp.API.Controllers
         [HttpPost]
         public ActionResult<GetBeer> Add([FromBody] AddBeerCommand command)
         {
-            if (command == null) return BadRequest();
-
             var beer = _beerService.Add(command);
 
             return CreatedAtAction(nameof(GetById), new { id = beer.Id }, _mapper.Map<GetBeer.Beer>(beer));
