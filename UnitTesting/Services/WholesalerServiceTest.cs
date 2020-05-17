@@ -6,6 +6,7 @@ using BeerApp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -248,6 +249,66 @@ namespace UnitTesting.Services
             var discount = quote.GetQuantityDiscount();
 
             Assert.Equal(10, discount);
+        }
+
+
+        // Problem with seeding
+        [Fact]
+        public async Task AddBeerWholesaler_ReturnOk()
+        {
+            var command = new AddBeerToWholesalerCommand{ BeerId = 5, WholesalerId = 2, Stock = 20 };
+
+            using (var context = new BeerContext(ContextOptions))
+            {
+                var service = new WholesalerService(context);
+
+                await service.AddBeer(command);
+
+                var wholesaler = await context.Wholesalers
+                    .Include(w => w.WholesalerBeers)
+                    .SingleOrDefaultAsync(w => w.Id == command.WholesalerId);
+
+                Assert.Contains(wholesaler.WholesalerBeers, wb => wb.BeerId == 5);
+            }
+        }
+
+        [Fact]
+        public async Task AddBeerWholesaler_AlreadyContainsBeer()
+        {
+            var command = new AddBeerToWholesalerCommand { BeerId = 1, WholesalerId = 2, Stock = 20 };
+
+            using (var context = new BeerContext(ContextOptions))
+            {
+                var service = new WholesalerService(context);
+
+                await Assert.ThrowsAsync<CustomBadRequestException>(() => service.AddBeer(command));
+            }
+        }
+
+        [Fact]
+        public async Task AddBeerWholesaler_WholesalerNotExist()
+        {
+            var command = new AddBeerToWholesalerCommand { BeerId = 1, WholesalerId = 10, Stock = 20 };
+
+            using (var context = new BeerContext(ContextOptions))
+            {
+                var service = new WholesalerService(context);
+
+                await Assert.ThrowsAsync<CustomBadRequestException>(() => service.AddBeer(command));
+            }
+        }
+
+        [Fact]
+        public async Task AddBeerWholesaler_BeerNotExist()
+        {
+            var command = new AddBeerToWholesalerCommand { BeerId = 100, WholesalerId = 1, Stock = 20 };
+
+            using (var context = new BeerContext(ContextOptions))
+            {
+                var service = new WholesalerService(context);
+
+                await Assert.ThrowsAsync<CustomBadRequestException>(() => service.AddBeer(command));
+            }
         }
     }
 }
